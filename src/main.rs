@@ -39,6 +39,10 @@ struct Args {
     /// Number of seconds to wait in between publishing temperature values.
     #[arg(short, long, default_value = "5")]
     interval: u64,
+
+    /// Whether the broker should retain the last message sent.
+    #[arg(short, long, default_value = "false")]
+    retain: bool,
 }
 
 fn read_to_string(path: &String) -> Result<String, std::io::Error> {
@@ -85,6 +89,7 @@ fn main() {
     let topic = args.topic;
     let verbose = args.verbose;
     let interval = args.interval;
+    let retain = args.retain;
 
     let mut mqtt_options = MqttOptions::new(
         "sysmon-mqtt-rs",
@@ -102,7 +107,7 @@ fn main() {
         client.publish(
             topic.clone(),
             QoS::AtLeastOnce,
-            false,
+            retain,
             temperature
         ).unwrap();
         thread::sleep(Duration::from_secs(interval));

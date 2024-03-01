@@ -39,6 +39,7 @@ Options:
   -t, --topic <TOPIC>        The topic to publish the temperature to
   -v, --verbose              Whether to log the temperature value being published
   -i, --interval <INTERVAL>  Number of seconds to wait in between publishing temperature values [default: 5]
+  -r, --retain               Whether the broker should retain the last message sent
   -h, --help                 Print help
   -V, --version              Print version
 ```
