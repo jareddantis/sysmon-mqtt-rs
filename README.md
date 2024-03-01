@@ -43,3 +43,26 @@ Options:
   -h, --help                 Print help
   -V, --version              Print version
 ```
+
+## Running as a service
+
+Below is an example systemd unit file for running the program as a service. This is the service file I use to run the program on my Pi Zero.
+
+```ini
+[Unit]
+Description=MQTT temperature monitor
+After=network.target
+
+[Service]
+ExecStart=/usr/local/etc/sysmon-mqtt-rs \
+	-a IP_ADDRESS \
+	-u USERNAME -p PASSWORD \
+	-t TOPIC \
+	-i 10 --retain \
+	-f /sys/class/thermal/thermal_zone0/temp
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Change the path in `ExecStart` to the location of the binary on your system. Change the other options to match your MQTT broker's settings and your system's temperature file.
