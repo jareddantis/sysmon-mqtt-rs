@@ -1,4 +1,6 @@
 use clap::Parser;
+use gethostname::gethostname;
+use rand::distributions::{Alphanumeric, DistString};
 use rumqttc::{MqttOptions, Client, QoS};
 use std::fs::File;
 use std::io::Read;
@@ -79,6 +81,12 @@ fn get_temperature(file_path: &String, verbose: bool) -> Result<String, std::io:
     Ok(formatted)
 }
 
+fn generate_client_id() -> String {
+    let hostname = gethostname().into_string().unwrap();
+    let suffix = Alphanumeric.sample_string(&mut rand::thread_rng(), 5);
+    format!("sysmon_{}_{}", hostname, suffix)
+}
+
 fn main() {
     let args = Args::parse();
     let file_path = args.file;
@@ -91,8 +99,10 @@ fn main() {
     let interval = args.interval;
     let retain = args.retain;
 
+    let client_id = generate_client_id();
+    print!("Connecting to {}:{} as client ID {}\n", host, port, client_id);
     let mut mqtt_options = MqttOptions::new(
-        "sysmon-mqtt-rs",
+        client_id,
         host,
         port,
     );
